@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tool Tài Xỉu Go88 VIP - Quản Lý Vốn</title>
+  <style>
+    body {
+      background: #000;
+      color: #FFD700;
+      font-family: 'Arial Black', sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 28px;
+      color: #00FFFF;
+      text-shadow: 0 0 8px #FFD700;
+    }
+    .box {
+      background: #111;
+      border: 2px solid #FFD700;
+      border-radius: 10px;
+      padding: 20px;
+      max-width: 650px;
+      margin: auto;
+      box-shadow: 0 0 15px #ffaa00;
+    }
+    input {
+      width: 90%;
+      font-size: 16px;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 2px solid #FFD700;
+      background: #222;
+      color: #fff;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 25px;
+      font-size: 18px;
+      background: #FFD700;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 0 10px #FFD700;
+    }
+    .result, .recommend, .trend {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+    .highlight {
+      font-size: 28px;
+      color: #00ff99;
+      text-shadow: 0 0 10px #00ffcc;
+      font-weight: bold;
+    }
+    footer {
+      margin-top: 30px;
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎯 Tool Tài Xỉu Go88 VIP PRO - Quản Lý Vốn</h1>
+  <div class="box">
+    <p><strong>Nhập 21 kết quả gần nhất (Tài Xỉu cách nhau bằng dấu cách):</strong></p>
+    <input id="txInput" placeholder="Tài Xỉu Tài Tài Xỉu ..." />
+    <p><strong>Nhập số vốn hiện tại (VNĐ):</strong></p>
+    <input id="capitalInput" type="number" placeholder="VD: 20000" />
+    <button onclick="analyze()">🔥 Phân Tích & Dự Đoán</button>
+
+    <div class="trend" id="trend"></div>
+    <div class="result" id="result"></div>
+    <div class="recommend" id="recommend"></div>
+  </div>
+
+  <footer>Cre by Trần Quốc Trịnh</footer>
+
+  <script>
+    function speak(text) {
+      if ('speechSynthesis' in window) {
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'vi-VN';
+        window.speechSynthesis.speak(msg);
+      }
+    }
+
+    function detectTrend(data) {
+      const last5 = data.slice(-5);
+      if (last5.every(v => v === "Tài")) return "💪 Cầu bệt Tài";
+      if (last5.every(v => v === "Xỉu")) return "💪 Cầu bệt Xỉu";
+      if (last5.join("-").match(/^(Tài-Xỉu-){2}Tài$|^(Xỉu-Tài-){2}Xỉu$/)) return "🔁 Cầu 1-1 đảo";
+      if (last5.join("-").includes("Tài-Tài-Xỉu") || last5.join("-").includes("Xỉu-Xỉu-Tài")) return "📉 Cầu 2-1 đang hình thành";
+      return "⚠️ Cầu nhiễu hoặc chưa rõ";
+    }
+
+    function analyze() {
+      const input = document.getElementById("txInput").value.trim();
+      const raw = input.split(/\s+/).map(x => x.trim().toLowerCase());
+      const capital = parseInt(document.getElementById("capitalInput").value.trim());
+
+      const labels = raw.map(x => {
+        if (x.includes("t")) return "Tài";
+        if (x.includes("x")) return "Xỉu";
+        return "";
+      }).filter(x => x !== "");
+
+      if (labels.length < 10 || isNaN(capital) || capital <= 0) {
+        document.getElementById("result").innerText = "⚠️ Nhập đúng 21 kết quả và vốn hợp lệ!";
+        return;
+      }
+
+      const trendText = detectTrend(labels);
+      document.getElementById("trend").innerText = `📊 Cầu hiện tại: ${trendText}`;
+
+      let prediction = "⚠️ KHÔNG ĐÁNH";
+      let confidence = 0;
+      const last3 = labels.slice(-3).join("-");
+
+      if (last3 === "Tài-Tài-Tài") { prediction = "Xỉu"; confidence = 94; }
+      else if (last3 === "Xỉu-Xỉu-Xỉu") { prediction = "Tài"; confidence = 94; }
+      else if (last3 === "Tài-Tài-Xỉu") { prediction = "Tài"; confidence = 88; }
+      else if (last3 === "Xỉu-Xỉu-Tài") { prediction = "Xỉu"; confidence = 85; }
+      else if (last3 === "Tài-Xỉu-Tài") { prediction = "Xỉu"; confidence = 82; }
+      else if (last3 === "Xỉu-Tài-Xỉu") { prediction = "Tài"; confidence = 82; }
+
+      let suggest = "🚫 KHÔNG NÊN VÀO TIỀN";
+      if (confidence >= 88) suggest = `${Math.floor(capital * 0.3)} VNĐ`;
+      else if (confidence >= 85) suggest = `${Math.floor(capital * 0.2)} VNĐ`;
+      else if (confidence >= 82) suggest = `${Math.floor(capital * 0.15)} VNĐ`;
+
+      if (prediction !== "⚠️ KHÔNG ĐÁNH") speak(prediction);
+      document.getElementById("result").innerHTML = `🔮 Dự đoán: <span class="highlight">${prediction}</span> (${confidence}%)`;
+      document.getElementById("recommend").innerHTML = `💰 Gợi ý cược: <strong>${suggest}</strong>`;
+    }
+  </script>
+</body>
+</html>
